@@ -17,7 +17,7 @@
 % Single byte (8 bits) are read from the Serial object
 % byte is analyzed as such:
 %     [7]-[3] = ignored
-%     [2] = to active
+%     [2] = to_active
 %     [1] = at_pos
 %     [0] = detected
 % Function only runs when new data is read in Serial buffer
