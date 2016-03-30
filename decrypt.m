@@ -7,6 +7,9 @@
 % http://www.mathworks.com/help/matlab/matlab_external/readasyncmode.html
 % http://www.mathworks.com/help/matlab/ref/readasync.html
 % http://www.mathworks.com/help/instrument/writing-and-reading-data-1.html#f14-18481
+% http://www.mathworks.com/help/matlab/ref/serial.fread.html
+% http://www.mathworks.com/help/matlab/ref/fread.html#outputarg_A
+% http://www.mathworks.com/help/matlab/ref/serial.fscanf.html
 
 %% Function
 % This function is used to analyze the input stream from an asynchronous
@@ -28,11 +31,18 @@
 % if not
 % all variables returned will be -1 if no information is in Serial buffer
 
-function [ to_active, at_pos, detected ] = decrypt( ~ )
+function [ to_active, at_pos, detected ] = decrypt( ser )
 
-to_active = 1;
-at_pos = 2;
-detected = 3;
+if s.BytesAvailable > 0
+    alpha = fread(ser);
+    to_active = alpha(3);
+    at_pos = alpha(2);
+    detected = alpha(1);
+else
+    to_active = -1;
+    at_pos = -1;
+    detected = -1;
+end
 
 end
 
