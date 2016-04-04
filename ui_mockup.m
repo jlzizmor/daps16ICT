@@ -32,6 +32,7 @@ subplot(num_rows, num_rows, [ (1 + 4*num_rows) ((num_rows*num_rows)-(0.7*num_row
 x = 0:pi/100:2*pi;
 y = sin(x);
 plot(x,y)
+title('Current Pressure')
 ax = gca; % http://www.mathworks.com/help/matlab/ref/gca.html
 ax.XColor = 'none';
 ylim([0 2.5])
