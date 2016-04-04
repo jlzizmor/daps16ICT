@@ -8,12 +8,10 @@ plot3(st,ct,t) % http://www.mathworks.com/help/matlab/ref/plot3.html
 title('Model')
 
 subplot(3,3,1) 
-theta = linspace(0,2*pi);
-x = cos(theta);
-y = sin(theta);
-a = area(x, y);
-a.FaceColor = 'g'; % http://www.mathworks.com/help/matlab/ref/area-properties.html
-a.EdgeColor = 'g';
-% a.Visible = 'off';
-axis square % http://www.cs.cornell.edu/courses/cs100m/2007fa/Graphics/AxisStyle.pdf
-title('EMG Detection')
+E = 0;
+N = 0;
+r=1; % some radius
+color=[0 1 0]; % red color
+t=linspace(0,2*pi);
+fill(E+r*cos(t),N+r*sin(t),color); % this creates a filled circle centered at (E,N)
+axis square
