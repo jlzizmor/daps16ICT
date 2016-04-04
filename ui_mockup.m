@@ -18,5 +18,6 @@ t=linspace(0,2*pi);
 fill(E+r*cos(t),N+r*sin(t),color); % this creates a filled circle centered at (E,N)
 axis square
 ax = gca; % http://www.mathworks.com/help/matlab/ref/gca.html
-ax.Color = 'none';
-ax.Box = 'off';
+ax.Color = 'none'; % http://www.mathworks.com/help/matlab/ref/axes-properties.html
+ax.XColor = 'none';
+ax.YColor = 'none';
