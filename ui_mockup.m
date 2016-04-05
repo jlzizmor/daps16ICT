@@ -1,9 +1,9 @@
 close all
-num_rows = 20;
+resolution = 20;
 
 figure % http://www.mathworks.com/help/matlab/examples/displaying-multiple-plots-in-a-single-figure.html
-
-subplot(num_rows, num_rows, [(num_rows-(0.6*num_rows)) (num_rows*num_rows)])
+%% 3D Model
+subplot(resolution, resolution, [(resolution-(0.6*resolution)) (resolution*resolution)])
 t = 0:pi/50:10*pi;
 st = sin(t);
 ct = cos(t);
@@ -15,7 +15,8 @@ set(gca, 'XTick', []);
 set(gca, 'YTick', []);
 set(gca, 'ZTick', []);
 
-subplot(num_rows,num_rows,[(0.25*num_rows) (2+num_rows)] )
+%% Boolean Feedback
+subplot(resolution,resolution,[(0.25*resolution) (2+resolution)] )
 E = 0;
 N = 0;
 r=1;
@@ -28,11 +29,26 @@ ax.Color = 'none'; % http://www.mathworks.com/help/matlab/ref/axes-properties.ht
 ax.XColor = 'none';
 ax.YColor = 'none';
 
-subplot(num_rows, num_rows, [ (1 + 4*num_rows) ((num_rows*num_rows)-(0.7*num_rows)) ])
-x = 0:pi/100:2*pi;
-y = sin(x);
-plot(x,y)
+%% Pressure
+subplot(resolution, resolution, [ (1 + 4*resolution) ((resolution*resolution)-(0.7*resolution)) ])
+level = 1;
+passive = 0.25;
+active = 2.5;
+ybuff = passive-0;
+YMIN = [0 0];
+PAS = [passive passive];
+Y = [level level];
+ACT = [active active];
+YMAX = [active+ybuff active+ybuff];
+
+hold on;
+area(YMAX, 'FaceColor', [135/255 206/255 250/255]);
+area(ACT, 'FaceColor', 'w');
+area(Y, 'FaceColor', 'b');
+area(PAS, 'FaceColor', [135/255 206/255 250/255]);
+hold off;
+
 title('Current Pressure')
 ax = gca; % http://www.mathworks.com/help/matlab/ref/gca.html
 ax.XColor = 'none';
-ylim([0 2.5])
+ylim([passive-ybuff active+ybuff])
