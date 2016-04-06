@@ -4,9 +4,12 @@
 
 %% Preparation
 close all
+counter = 0;
+az = -37.5; % http://www.mathworks.com/help/matlab/visualize/setting-the-viewpoint-with-azimuth-and-elevation.html
+el = 30;
 to_act = -1; % if the socket is going towards or is at the active position
 at_pos = -1; % if the socket is at its goal position
-det = -1; % if the EMG algorithm has confirmed movement
+det = 0; % if the EMG algorithm has confirmed movement
 
 %% Seupt Serial
 COM_PORT = 'COM1';
@@ -23,8 +26,12 @@ status = ishandle(1); % check if figure is open
 
 %% Main Loop
 while (status)
+    counter = counter + 1;
     %% Serial Analysis
-%     [to_act, at_pos, det] = decrypt(s);
+    %     [to_act, at_pos, det] = decrypt(s);
+    if counter > 100
+        det = 1;
+    end
     
     %% 3D Model
     subplot(resolution, resolution, [(resolution-(0.6*resolution)) (resolution*resolution)])
@@ -32,12 +39,14 @@ while (status)
     st = sin(t);
     ct = cos(t);
     plot3(st,ct,t) % http://www.mathworks.com/help/matlab/ref/plot3.html
+	view(az,el); % http://www.mathworks.com/matlabcentral/answers/21919-problem-with-view-to-save-the-orientation-of-a-plot-and-then-use-it-for-another    
     title('Model')
     ax = gca; % http://www.mathworks.com/help/matlab/ref/gca.html
     ax.Box = 'on';
     set(gca, 'XTick', []);
     set(gca, 'YTick', []);
     set(gca, 'ZTick', []);
+    [az,el]=view % http://www.mathworks.com/matlabcentral/answers/21919-problem-with-view-to-save-the-orientation-of-a-plot-and-then-use-it-for-another
     
     %% Boolean Feedback
     subplot(resolution,resolution,[(0.25*resolution) (2+resolution)] )
@@ -47,7 +56,11 @@ while (status)
     colorON=[0 1 0];
     colorOFF=[1 0 0];
     t=linspace(0,2*pi);
-    fill(E+r*cos(t),N+r*sin(t),colorON); % this creates a filled circle centered at (E,N)
+    if (det==1) % movement detected
+        fill(E+r*cos(t),N+r*sin(t),colorON); % this creates a filled circle centered at (E,N)
+    else % movement not detected
+        fill(E+r*cos(t),N+r*sin(t),colorOFF); % this creates a filled circle centered at (E,N)
+    end
     axis square
     ax = gca; % http://www.mathworks.com/help/matlab/ref/gca.html
     ax.Color = 'none'; % http://www.mathworks.com/help/matlab/ref/axes-properties.html
