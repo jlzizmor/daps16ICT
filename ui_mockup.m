@@ -2,16 +2,30 @@
 % Author: Jacob Zizmor
 % ui_mockup.m
 
+%% Preparation
 close all
-resolution = 20;
+to_act = -1; % if the socket is going towards or is at the active position
+at_pos = -1; % if the socket is at its goal position
+det = -1; % if the EMG algorithm has confirmed movement
+
+%% Seupt Serial
+COM_PORT = 'COM1';
+% s = serial(COM_PORT); % http://www.mathworks.com/help/matlab/matlab_external/getting-started-with-serial-i-o.html?s_tid=gn_loc_drop
+% set(s,'BaudRate',9600);
+% s.ReadAsyncMode = 'continuous';
+% fopen(s);
 
 %% Setup Figure Window
+resolution = 20;
 figure % http://www.mathworks.com/help/matlab/examples/displaying-multiple-plots-in-a-single-figure.html
 set(gcf,'name','DAPS','numbertitle','off')
 status = ishandle(1); % check if figure is open
 
 %% Main Loop
 while (status)
+    %% Serial Analysis
+%     [to_act, at_pos, det] = decrypt(s);
+    
     %% 3D Model
     subplot(resolution, resolution, [(resolution-(0.6*resolution)) (resolution*resolution)])
     t = 0:pi/50:10*pi;
@@ -68,3 +82,7 @@ while (status)
     drawnow; % show plot instead of waiting for while loop to end
     status = ishandle(1); % check if figure is open
 end
+
+%% Cleanup
+% fclose(s); % http://www.mathworks.com/help/matlab/matlab_external/getting-started-with-serial-i-o.html?s_tid=gn_loc_drop
+% delete(s);
