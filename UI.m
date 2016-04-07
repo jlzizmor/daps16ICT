@@ -11,6 +11,10 @@ to_act = 0; % if the socket is going towards or is at the active position
 at_pos = 1; % if the socket is at its goal position
 det = 0; % if the EMG algorithm has confirmed movement
 
+to_actT = -1; % temporary variable for Serial read
+at_posT = -1;
+detT = -1;
+
 %% Seupt Serial
 COM_PORT = 'COM1';
 % s = serial(COM_PORT); % http://www.mathworks.com/help/matlab/matlab_external/getting-started-with-serial-i-o.html?s_tid=gn_loc_drop
@@ -41,14 +45,14 @@ while (status)
     st = sin(t);
     ct = cos(t);
     plot3(st,ct,t) % http://www.mathworks.com/help/matlab/ref/plot3.html
-	view(az,el); % http://www.mathworks.com/matlabcentral/answers/21919-problem-with-view-to-save-the-orientation-of-a-plot-and-then-use-it-for-another    
+% 	view(az,el); % http://www.mathworks.com/matlabcentral/answers/21919-problem-with-view-to-save-the-orientation-of-a-plot-and-then-use-it-for-another    
     title('Model')
     ax = gca; % http://www.mathworks.com/help/matlab/ref/gca.html
     ax.Box = 'on';
     set(gca, 'XTick', []);
     set(gca, 'YTick', []);
     set(gca, 'ZTick', []);
-    [az,el]=view % http://www.mathworks.com/matlabcentral/answers/21919-problem-with-view-to-save-the-orientation-of-a-plot-and-then-use-it-for-another
+%     [az,el]=view; % http://www.mathworks.com/matlabcentral/answers/21919-problem-with-view-to-save-the-orientation-of-a-plot-and-then-use-it-for-another
     
     %% Boolean Feedback
     subplot(resolution,resolution,[(0.25*resolution) (2+resolution)] )
