@@ -7,8 +7,8 @@ close all
 counter = 0;
 az = -37.5; % http://www.mathworks.com/help/matlab/visualize/setting-the-viewpoint-with-azimuth-and-elevation.html
 el = 30;
-to_act = -1; % if the socket is going towards or is at the active position
-at_pos = -1; % if the socket is at its goal position
+to_act = 0; % if the socket is going towards or is at the active position
+at_pos = 1; % if the socket is at its goal position
 det = 0; % if the EMG algorithm has confirmed movement
 
 %% Seupt Serial
@@ -28,11 +28,13 @@ status = ishandle(1); % check if figure is open
 while (status)
     counter = counter + 1;
     %% Serial Analysis
-    %     [to_act, at_pos, det] = decrypt(s);
-    if counter > 100
-        det = 1;
+    %     [to_actT, at_posT, detT] = decrypt(s);
+    if to_actT ~= -1
+    	to_act = to_actT;
+    	at_pos = at_posT;
+    	det = detT;
     end
-    
+
     %% 3D Model
     subplot(resolution, resolution, [(resolution-(0.6*resolution)) (resolution*resolution)])
     t = 0:pi/50:10*pi;
