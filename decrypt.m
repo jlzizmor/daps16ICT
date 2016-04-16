@@ -32,13 +32,25 @@
 % all variables returned will be -1 if no information is in Serial buffer
 
 function [ to_active, at_pos, detected ] = decrypt( ser )
-
-if s.BytesAvailable > 0
-    alpha = dec2bin(fread(ser));
+if ser.BytesAvailable > 0
+    alpha = fread(ser);
     alpha = alpha(length(alpha));
-    to_active = alpha(length(alpha)-2);
-    at_pos = alpha(length(alpha)-1);
-    detected = alpha(length(alpha));
+    alpha = num2str(dec2bin(alpha));
+    if length(alpha) > 0
+        detected = alpha(length(alpha));
+        if length(alpha) > 1
+            at_pos = alpha(length(alpha)-1);
+            if length(alpha) > 2
+                to_active = alpha(length(alpha)-2);
+            end
+        else
+            to_active = 0;
+        end
+    else
+        detected = 0;
+        at_pos = 0;
+        to_active = 0;
+    end    
 else
     to_active = -1;
     at_pos = -1;
