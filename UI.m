@@ -23,10 +23,14 @@ el = 30;
 
 %% Seupt Serial
 COM_PORT = 'COM1';
-% s = serial(COM_PORT); % http://www.mathworks.com/help/matlab/matlab_external/getting-started-with-serial-i-o.html?s_tid=gn_loc_drop
-% set(s,'BaudRate',9600);
-% s.ReadAsyncMode = 'continuous';
-% fopen(s);
+s = serial(COM_PORT); % http://www.mathworks.com/help/matlab/matlab_external/getting-started-with-serial-i-o.html?s_tid=gn_loc_drop
+set(s,'BaudRate',9600);
+s.ReadAsyncMode = 'continuous';
+try
+    fopen(s);
+catch
+    errordlg(strcat('Serial port ',strcat(strcat(' ',COM_PORT),' could not be opened.')));
+end
 
 %% Setup Figure Window
 resolution = 20;
@@ -37,7 +41,7 @@ status = ishandle(1); % check if figure is open
 %% Main Loop
 while (status)
     %% Serial Analysis
-    %     [to_actT, at_posT, detT] = decrypt(s);
+    [to_actT, at_posT, detT] = decrypt(s);
     if to_actT ~= -1
         to_act = to_actT;
         at_pos = at_posT;
@@ -78,10 +82,13 @@ while (status)
     colorON=[0 1 0];
     colorOFF=[1 0 0];
     t=linspace(0,2*pi);
-    if (det==1) % movement detected
+    
+    if (det=='1') % movement detected
         fill(E+r*cos(t),N+r*sin(t),colorON); % this creates a filled circle centered at (E,N)
+        disp('green');
     else % movement not detected
         fill(E+r*cos(t),N+r*sin(t),colorOFF); % this creates a filled circle centered at (E,N)
+        disp('red');
     end
     axis square
     ax = gca; % http://www.mathworks.com/help/matlab/ref/gca.html
@@ -135,5 +142,7 @@ while (status)
 end
 
 %% Cleanup
-% fclose(s); % http://www.mathworks.com/help/matlab/matlab_external/getting-started-with-serial-i-o.html?s_tid=gn_loc_drop
-% delete(s);
+if s.status(1) ~= 'c'
+    fclose(s); % http://www.mathworks.com/help/matlab/matlab_external/getting-started-with-serial-i-o.html?s_tid=gn_loc_drop
+    delete(s);
+end
