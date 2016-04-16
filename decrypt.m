@@ -35,6 +35,7 @@ function [ to_active, at_pos, detected ] = decrypt( ser )
 
 if s.BytesAvailable > 0
     alpha = dec2bin(fread(ser));
+    alpha = alpha(length(alpha));
     to_active = alpha(length(alpha)-2);
     at_pos = alpha(length(alpha)-1);
     detected = alpha(length(alpha));
