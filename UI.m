@@ -1,14 +1,11 @@
 %% Heading
-% Author: Jacob Zizmor
+% Author: Jacob Zizmor and Meagan Hiatt
 % ui_mockup.m
 
 %% Preparation
 close all
 
-toActiveTime = 1.377; % time it takes the motors to move from passive to active pressure
-toPassiveTime = 1.262; % time it takes the motors to move from active to passive pressure
-actuatordelay = ((-187) + (-220))/2; % delay after EMG detection to actuator movement
-started = 0; % whether or not the stopwatch has been started
+first = 1; % whether or not the stopwatch has been started
 
 to_act = 0; % if the socket is going towards or is at the active position
 at_pos = 1; % if the socket is at its goal position
@@ -17,9 +14,6 @@ det = 0; % if the EMG algorithm has confirmed movement
 to_actT = -1; % temporary variable for Serial read
 at_posT = -1;
 detT = -1;
-
-az = -37.5; % http://www.mathworks.com/help/matlab/visualize/setting-the-viewpoint-with-azimuth-and-elevation.html
-el = 30;
 
 %% Seupt Serial
 COM_PORT = 'COM1';
@@ -46,17 +40,6 @@ while (status)
         to_act = to_actT;
         at_pos = at_posT;
         det = detT;
-        
-        if det == 1
-            if started == 0
-                started = 1;
-                tic;
-            end
-        else
-            if started == 1
-                started = 0;
-            end
-        end
     end
     
     %% 3D Model
@@ -79,62 +62,61 @@ while (status)
     E = 0;
     N = 0;
     r=1;
-    colorON=[0 1 0];
-    colorOFF=[1 0 0];
+    colorON='g';
+    colorOFF='r';
     t=linspace(0,2*pi);
     
     if (det=='1') % movement detected
-        fill(E+r*cos(t),N+r*sin(t),colorON); % this creates a filled circle centered at (E,N)
-        disp('green');
+        b = fill(E+r*cos(t),N+r*sin(t),colorON); % this creates a filled circle centered at (E,N)
     else % movement not detected
-        fill(E+r*cos(t),N+r*sin(t),colorOFF); % this creates a filled circle centered at (E,N)
-        disp('red');
+        b = fill(E+r*cos(t),N+r*sin(t),colorOFF); % this creates a filled circle centered at (E,N)
     end
+    set(b,'EdgeColor','none');
     axis square
+    title('Movement Detection');
     ax = gca; % http://www.mathworks.com/help/matlab/ref/gca.html
     ax.Color = 'none'; % http://www.mathworks.com/help/matlab/ref/axes-properties.html
     ax.XColor = 'none';
     ax.YColor = 'none';
     
     %% Pressure
+    spacing = 5;
     subplot(resolution, resolution, [ (1 + 4*resolution) ((resolution*resolution)-(0.7*resolution)) ])
-    level = 1;
-    passive = 0.25;
-    active = 2.5;
-    ybuff = passive-0;
-    PAS = [passive passive];
-    ACT = [active active];
-    YMAX = [active+ybuff active+ybuff];
-    
-    if at_pos==1
-        if to_act==1
-            level = ACT(1);
-        else
-            level = PAS(1);
-        end
-    end
-    
-    if det==1
-        if to_act==1
-            change = (toc/toActiveTime);
-        else
-            change = (toc/toPassiveTime);
-        end
-        level = 0.5+(change*(ACT(1)-PAS(1)));
-    end
-    
-    Y = [level level];
     hold on;
-    area(YMAX, 'FaceColor', [135/255 206/255 250/255]);
-    area(ACT, 'FaceColor', 'w');
-    area(Y, 'FaceColor', 'b');
-    area(PAS, 'FaceColor', [135/255 206/255 250/255]);
-    hold off;
     
-    title('Current Pressure')
+    ang=0:0.01:2*pi; % http://www.mathworks.com/matlabcentral/answers/3058-plotting-circles
+    xp=r*cos(ang);
+    yp=r*sin(ang);
+    
+    p_color = 'm';
+    t_color = 'y';
+    a_color = 'b';
+    no_color = 'w';
+    
+    if at_pos=='0' % http://www.mathworks.com/help/matlab/ref/colorspec.html
+        p = fill(0+xp,(-1*spacing)+yp, no_color);
+        t = fill(0+xp,0+yp, t_color);
+        a = fill(0+xp,spacing+yp, no_color);
+        set(t,'EdgeColor','none');
+    elseif to_act=='1'
+        p = fill(0+xp,(-1*spacing)+yp, no_color);
+        t = fill(0+xp,0+yp, no_color);
+        a = fill(0+xp,spacing+yp, a_color);
+        set(a,'EdgeColor','none');
+    else
+        p = fill(0+xp,(-1*spacing)+yp, p_color);
+        t = fill(0+xp,0+yp, no_color);
+        a = fill(0+xp,spacing+yp, no_color);
+        set(p,'EdgeColor','none');
+    end
+    
+    axis equal
+    title('Current Pressure');
     ax = gca; % http://www.mathworks.com/help/matlab/ref/gca.html
+    ax.Color = 'none'; % http://www.mathworks.com/help/matlab/ref/axes-properties.html
     ax.XColor = 'none';
-    ylim([passive-ybuff active+ybuff])
+    ax.YColor = 'none';
+    hold off;
     
     %% Control Flow
     drawnow; % show plot instead of waiting for while loop to end
@@ -142,7 +124,6 @@ while (status)
 end
 
 %% Cleanup
-if s.status(1) ~= 'c'
-    fclose(s); % http://www.mathworks.com/help/matlab/matlab_external/getting-started-with-serial-i-o.html?s_tid=gn_loc_drop
-    delete(s);
-end
+fclose(s); % http://www.mathworks.com/help/matlab/matlab_external/getting-started-with-serial-i-o.html?s_tid=gn_loc_drop
+delete(s);
+clear s;
