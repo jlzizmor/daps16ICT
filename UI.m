@@ -5,26 +5,14 @@
 %% Preparation
 close all
 
-first = 1; % whether or not the stopwatch has been started
+counter = 1; % counter for file read
 
 to_act = 0; % if the socket is going towards or is at the active position
 at_pos = 1; % if the socket is at its goal position
 det = 0; % if the EMG algorithm has confirmed movement
 
-to_actT = -1; % temporary variable for Serial read
-at_posT = -1;
-detT = -1;
-
-%% Seupt Serial
-COM_PORT = 'COM1';
-s = serial(COM_PORT); % http://www.mathworks.com/help/matlab/matlab_external/getting-started-with-serial-i-o.html?s_tid=gn_loc_drop
-set(s,'BaudRate',9600);
-s.ReadAsyncMode = 'continuous';
-try
-    fopen(s);
-catch
-    errordlg(strcat('Serial port ',strcat(strcat(' ',COM_PORT),' could not be opened.')));
-end
+%% File Setup
+fileName='mbed.csv';
 
 %% Setup Figure Window
 resolution = 20;
@@ -35,12 +23,7 @@ status = ishandle(1); % check if figure is open
 %% Main Loop
 while (status)
     %% Serial Analysis
-    [to_actT, at_posT, detT] = decrypt(s);
-    if to_actT ~= -1
-        to_act = to_actT;
-        at_pos = at_posT;
-        det = detT;
-    end
+    [to_act, at_pos, det,counter] = decryptFile(fileName,counter);
     
     %% 3D Model
     subplot(resolution, resolution, [(resolution-(0.6*resolution)) (resolution*resolution)])
@@ -124,6 +107,3 @@ while (status)
 end
 
 %% Cleanup
-fclose(s); % http://www.mathworks.com/help/matlab/matlab_external/getting-started-with-serial-i-o.html?s_tid=gn_loc_drop
-delete(s);
-clear s;
