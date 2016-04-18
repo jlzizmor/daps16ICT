@@ -5,25 +5,31 @@
 %% Preparation
 close all
 
-counter = 1; % counter for file read
+counter = 0; % counter for file read
 
 to_act = 0; % if the socket is going towards or is at the active position
 at_pos = 1; % if the socket is at its goal position
 det = 0; % if the EMG algorithm has confirmed movement
 
 %% File Setup
-fileName='mbed.csv';
+fileName='mbed-meg-rec-3.csv';
+data = csvread(fileName);
 
 %% Setup Figure Window
 resolution = 20;
 figure % http://www.mathworks.com/help/matlab/examples/displaying-multiple-plots-in-a-single-figure.html
 set(gcf,'name','DAPS','numbertitle','off')
 status = ishandle(1); % check if figure is open
+pause(1);
 
 %% Main Loop
 while (status)
     %% Serial Analysis
-    [to_act, at_pos, det,counter] = decryptFile(fileName,counter);
+    [to_act, at_pos, det, counter] = decryptFile(data,counter);
+    
+    if mod(counter,100)==0
+        counter
+    end
     
     %% 3D Model
     subplot(resolution, resolution, [(resolution-(0.6*resolution)) (resolution*resolution)])
@@ -49,7 +55,7 @@ while (status)
     colorOFF='r';
     t=linspace(0,2*pi);
     
-    if (det=='1') % movement detected
+    if (det==1) % movement detected
         b = fill(E+r*cos(t),N+r*sin(t),colorON); % this creates a filled circle centered at (E,N)
     else % movement not detected
         b = fill(E+r*cos(t),N+r*sin(t),colorOFF); % this creates a filled circle centered at (E,N)
@@ -76,12 +82,12 @@ while (status)
     a_color = 'b';
     no_color = 'w';
     
-    if at_pos=='0' % http://www.mathworks.com/help/matlab/ref/colorspec.html
+    if at_pos==0 % http://www.mathworks.com/help/matlab/ref/colorspec.html
         p = fill(0+xp,(-1*spacing)+yp, no_color);
         t = fill(0+xp,0+yp, t_color);
         a = fill(0+xp,spacing+yp, no_color);
         set(t,'EdgeColor','none');
-    elseif to_act=='1'
+    elseif to_act==1
         p = fill(0+xp,(-1*spacing)+yp, no_color);
         t = fill(0+xp,0+yp, no_color);
         a = fill(0+xp,spacing+yp, a_color);
