@@ -31,29 +31,27 @@
 % if not
 % all variables returned will be -1 if no information is in Serial buffer
 
-function [ to_active, at_pos, detected, counter ] = decryptFile( fileName, counter )
-alpha = csvread(fileName);
+function [ to_active, at_pos, detected, counter ] = decryptFile( data, counter )
+alpha = data;
 if (counter > length(alpha)) || (counter < 1)
     counter = 1;
 end
+
 alpha = alpha(counter);
 counter = counter + 1;
+alpha = num2str(alpha);
 
-alpha = num2str(dec2bin(alpha));
-
-if length(alpha) > 0
-    detected = alpha(length(alpha));
-    if length(alpha) > 1
-        at_pos = alpha(length(alpha)-1);
-        if length(alpha) > 2
-            to_active = alpha(length(alpha)-2);
-        end
-    else
-        to_active = 0;
-    end
-else
-    detected = 0;
-    at_pos = 0;
+if length(alpha) == 1
     to_active = 0;
+    at_pos = 0;
+    detected = str2num(alpha);
+elseif length(alpha) == 2
+    to_active = 0;
+    at_pos = str2num(alpha(1));
+    detected = str2num(alpha(2));
+else
+    to_active = str2num(alpha(1));
+    at_pos = str2num(alpha(2));
+    detected = str2num(alpha(3));
 end
 end
