@@ -80,6 +80,7 @@ while (status)
     end
     
     %% 3D Model
+    subplot(resolution, resolution, [(resolution-(0.6*resolution)) (resolution*resolution)])
     if(inc < 3500)
         
         [a1, a2, a3] = findAngles(i, 10, X1, X2, Y1, Y2, Z1, Z2);
