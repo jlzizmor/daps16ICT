@@ -24,54 +24,56 @@ pause(1);
 
 
 %% Setup for Model
+  subplot(resolution, resolution, [(resolution-(0.6*resolution)) (resolution*resolution)])
+  thing = [.2, 1, 0.0; .1, 1, 0.25; 0, 1, 0.4; 0, 1, 0.6; 0, 1, 0.8; 0, 1, 1.0]; %mekes the color mpa
+        [X,Y,Z] = cylinder(5, 20); %creates the cylinder shape
+        grid on;
+        colormap (thing);
+        hold on;
 
+        cyn1 = surfc(X,Y,2*Z)
+        cyn2 = surfc(X,Y,2*Z+2)
+        cyn3 = surfc(X,Y,2*Z+4)
+        cyn4 = surfc(X,Y,2*Z+6)
+        cyn5 = surfc(X,Y,2*Z+8)
 
-thing = [.2, 1, 0.0; .1, 1, 0.25; 0, 1, 0.4; 0, 1, 0.6; 0, 1, 0.8; 0, 1, 1.0]; %mekes the color mpa
-[X,Y,Z] = cylinder(5, 20); %creates the cylinder shape
-grid on;
-colormap (thing);
-hold on;
+        % dome
+        [x,y,z] = sphere;      % Makes a 21-by-21 point sphere
+        x = x(11:end,:);       % Keep top 11 x points
+        y = y(11:end,:);       
+        z = z(11:end,:);       
+        r = 5;                 
+        cyn6 = surf(r.*x,r.*y,r.*-z);  
+        %sets up view
+        axis([-20 20 -25 25 -10 20])
+        az = -153;
+        el = 28;
+        view(az,el);
 
-cyn1 = surfc(X,Y,2*Z)
-cyn2 = surfc(X,Y,2*Z+2)
-cyn3 = surfc(X,Y,2*Z+4)
-cyn4 = surfc(X,Y,2*Z+6)
-cyn5 = surfc(X,Y,2*Z+8)
+        %now is the start of loop updating (the model has been initizalized)
+        xlabel('X');
+        ylabel('Z');
 
-% dome
-[x,y,z] = sphere;      % Makes a 21-by-21 point sphere
-x = x(11:end,:);       % Keep top 11 x points
-y = y(11:end,:);       
-z = z(11:end,:);       
-r = 5;                 
-cyn6 = surf(r.*x,r.*y,r.*-z);  
-%sets up view
-axis([-20 20 -25 25 -10 20])
-az = -153;
-el = 28;
-view(az,el);
+        origin = [0 0 10];
+        pause(1);
 
-%now is the start of loop updating (the model has been initizalized)
-xlabel('X');
-ylabel('Z');
+        a1 = 0.0;
+        a2 = 0.0;
+        a3 = 0.0;
+        p1 = 0.0;
+        pang2 = 0.0;
+        pang3 = 0.0;
+        xdir = [1 0 0];
+        ydir = [0 1 0];
+        zdir = [0 0 1];
+        i = 500;
+        inc = 0;
 
-origin = [0 0 10];
-pause(1);
-
-a1 = 0.0;
-a2 = 0.0;
-a3 = 0.0;
-p1 = 0.0;
-pang2 = 0.0;
-pang3 = 0.0;
-xdir = [1 0 0];
-ydir = [0 1 0];
-zdir = [0 0 1];
-i = 500;
 
 
 %% Main Loop
-while (status)
+%while (status)
+for i = 500:10:3500
     %% Serial Analysis
     [to_act, at_pos, det, counter] = decryptFile(data,counter);
     
@@ -80,7 +82,6 @@ while (status)
     end
     
     %% 3D Model
-    subplot(resolution, resolution, [(resolution-(0.6*resolution)) (resolution*resolution)])
     if(inc < 3500)
         
         [a1, a2, a3] = findAngles(i, 10, X1, X2, Y1, Y2, Z1, Z2);
@@ -110,10 +111,9 @@ while (status)
         rotate(cyn4, zdir, a3, origin);
         rotate(cyn5, zdir, a3, origin);
         rotate(cyn6, zdir, a3, origin);
-        %plot3(X1(i)*39, Y1(i)*39, Z1(i)*39, X2(i)*39, Y2(i)*39, Z2(i)*39);
-        %pauseTime = time(i+1)- time(i);
+        pauseTime = time(i+10)- time(i);
         drawnow;
-        %pause(pauseTime);
+        pause(pauseTime);
 
     end
     inc = inc + 1;
