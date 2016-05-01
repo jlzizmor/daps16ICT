@@ -31,11 +31,11 @@ pause(1);
         colormap (thing);
         hold on;
 
-        cyn1 = surfc(X,Y,2*Z)
-        cyn2 = surfc(X,Y,2*Z+2)
-        cyn3 = surfc(X,Y,2*Z+4)
-        cyn4 = surfc(X,Y,2*Z+6)
-        cyn5 = surfc(X,Y,2*Z+8)
+        cyn1 = surfc(X,Y,2*Z);
+        cyn2 = surfc(X,Y,2*Z+2);
+        cyn3 = surfc(X,Y,2*Z+4);
+        cyn4 = surfc(X,Y,2*Z+6);
+        cyn5 = surfc(X,Y,2*Z+8);
 
         % dome
         [x,y,z] = sphere;      % Makes a 21-by-21 point sphere
@@ -81,10 +81,6 @@ for i = 500:10:3500
     end
     [to_act, at_pos, det, counter] = decryptFile(data,counter);
     
-    if mod(counter,100)==0
-        counter
-    end
-    
     %% 3D Model
   
       if(inc < 90)
@@ -117,11 +113,12 @@ for i = 500:10:3500
         rotate(cyn5, zdir, a3, origin);
         rotate(cyn6, zdir, a3, origin);
         pauseTime = time(i+10)- time(i);
+        title('Motion Capture Model');
         drawnow;
         pause(pauseTime);
 
 end
-    inc = inc + 1
+    inc = inc + 1;
         
         
         
@@ -200,7 +197,7 @@ end
         a = fill(0+xp,spacing+yp, no_color);
         set(p,'EdgeColor','none');
     end
-    pressureCounter = pressureCounter+ 1;
+    %pressureCounter = pressureCounter+ 1;
     axis equal
     title('Current Pressure');
     ax = gca; % http://www.mathworks.com/help/matlab/ref/gca.html
