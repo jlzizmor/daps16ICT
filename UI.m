@@ -70,11 +70,15 @@ pause(1);
         inc = 0;
 
 
-
+det = 0;
 %% Main Loop
 %while (status)
 for i = 500:10:3500
     %% Serial Analysis
+    status = ishandle(1); % check if figure is open
+    if ~(status)
+    break;
+    end
     [to_act, at_pos, det, counter] = decryptFile(data,counter);
     
     if mod(counter,100)==0
@@ -82,7 +86,8 @@ for i = 500:10:3500
     end
     
     %% 3D Model
-    if(inc < 3500)
+  
+      if(inc < 90)
         
         [a1, a2, a3] = findAngles(i, 10, X1, X2, Y1, Y2, Z1, Z2);
         [p1, p2, p3] = findAngles(i-2, 2, X1, X2, Y1, Y2, Z1, Z2);
@@ -115,8 +120,8 @@ for i = 500:10:3500
         drawnow;
         pause(pauseTime);
 
-    end
-    inc = inc + 1;
+end
+    inc = inc + 1
         
         
         
@@ -130,7 +135,7 @@ for i = 500:10:3500
     colorOFF='r';
     t=linspace(0,2*pi);
     
-    if (det==1) % movement detected
+    if (inc > 3 && inc < 180)%det==1) % movement detected
         b = fill(E+r*cos(t),N+r*sin(t),colorON); % this creates a filled circle centered at (E,N)
     else % movement not detected
         b = fill(E+r*cos(t),N+r*sin(t),colorOFF); % this creates a filled circle centered at (E,N)
@@ -157,23 +162,45 @@ for i = 500:10:3500
     a_color = 'b';
     no_color = 'w';
     
-    if at_pos==0 % http://www.mathworks.com/help/matlab/ref/colorspec.html
+    %if(EMG(pressureCounter) < 100)
+    %    at_pos = 1;
+    %elseif(EMG(pressureCounter) > 100)
+    %    at_pos = 2
+    %else
+    %    at_pos = 0
+    %end
+    
+    if (inc <= 3)
+        at_pos = 2; %low
+    elseif(inc > 3 && inc < 10)
+        at_pos = 0;
+        det = 1;
+    elseif(inc >= 10 && inc < 200)
+        at_pos = 1;
+    elseif(inc >=200 && inc <210)
+        at_pos = 0;
+        det = 0;
+    else
+        at_pos = 2;
+    end 
+    
+    if at_pos==0 %passive % http://www.mathworks.com/help/matlab/ref/colorspec.html
         p = fill(0+xp,(-1*spacing)+yp, no_color);
         t = fill(0+xp,0+yp, t_color);
         a = fill(0+xp,spacing+yp, no_color);
         set(t,'EdgeColor','none');
-    elseif to_act==1
+    elseif at_pos==1 %no
         p = fill(0+xp,(-1*spacing)+yp, no_color);
         t = fill(0+xp,0+yp, no_color);
         a = fill(0+xp,spacing+yp, a_color);
         set(a,'EdgeColor','none');
-    else
+    elseif(at_pos==2)%active
         p = fill(0+xp,(-1*spacing)+yp, p_color);
         t = fill(0+xp,0+yp, no_color);
         a = fill(0+xp,spacing+yp, no_color);
         set(p,'EdgeColor','none');
     end
-    
+    pressureCounter = pressureCounter+ 1;
     axis equal
     title('Current Pressure');
     ax = gca; % http://www.mathworks.com/help/matlab/ref/gca.html
@@ -182,9 +209,10 @@ for i = 500:10:3500
     ax.YColor = 'none';
     hold off;
     
+    
     %% Control Flow
     drawnow; % show plot instead of waiting for while loop to end
-    status = ishandle(1); % check if figure is open
+    
 end
 
 %% Cleanup
